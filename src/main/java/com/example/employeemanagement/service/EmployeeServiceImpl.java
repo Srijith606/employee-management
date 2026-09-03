@@ -1,10 +1,12 @@
 package com.example.employeemanagement.service;
 
+import com.example.employeemanagement.dto.EmployeeDTO;
 import com.example.employeemanagement.entity.Employee;
 import com.example.employeemanagement.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -15,32 +17,72 @@ public class EmployeeServiceImpl implements EmployeeService {
         this.employeeRepository = employeeRepository;
     }
 
-    @Override
-    public Employee saveEmployee(Employee employee) {
-        return employeeRepository.save(employee);
+    private EmployeeDTO mapToDTO(Employee employee) {
+        return new EmployeeDTO(
+                employee.getId(),
+                employee.getName(),
+                employee.getEmail(),
+                employee.getDepartment(),
+                employee.getSalary()
+        );
+    }
+
+    private Employee mapToEntity(EmployeeDTO employeeDTO) {
+        Employee employee = new Employee();
+
+        employee.setId(employeeDTO.getId());
+        employee.setName(employeeDTO.getName());
+        employee.setEmail(employeeDTO.getEmail());
+        employee.setDepartment(employeeDTO.getDepartment());
+        employee.setSalary(employeeDTO.getSalary());
+
+        return employee;
     }
 
     @Override
-    public List<Employee> getAllEmployees() {
-        return employeeRepository.findAll();
+    public EmployeeDTO saveEmployee(EmployeeDTO employeeDTO) {
+
+        Employee employee = mapToEntity(employeeDTO);
+
+        Employee savedEmployee = employeeRepository.save(employee);
+
+        return mapToDTO(savedEmployee);
     }
 
     @Override
-    public Employee getEmployeeById(Long id) {
-        return employeeRepository.findById(id).orElse(null);
+    public List<EmployeeDTO> getAllEmployees() {
+
+        return employeeRepository.findAll()
+                .stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Employee updateEmployee(Long id, Employee employee) {
-        Employee existingEmployee = employeeRepository.findById(id).orElse(null);
+    public EmployeeDTO getEmployeeById(Long id) {
+
+        Employee employee = employeeRepository.findById(id)
+                .orElse(null);
+
+        return employee != null ? mapToDTO(employee) : null;
+    }
+
+    @Override
+    public EmployeeDTO updateEmployee(Long id, EmployeeDTO employeeDTO) {
+
+        Employee existingEmployee = employeeRepository.findById(id)
+                .orElse(null);
 
         if (existingEmployee != null) {
-            existingEmployee.setName(employee.getName());
-            existingEmployee.setEmail(employee.getEmail());
-            existingEmployee.setDepartment(employee.getDepartment());
-            existingEmployee.setSalary(employee.getSalary());
 
-            return employeeRepository.save(existingEmployee);
+            existingEmployee.setName(employeeDTO.getName());
+            existingEmployee.setEmail(employeeDTO.getEmail());
+            existingEmployee.setDepartment(employeeDTO.getDepartment());
+            existingEmployee.setSalary(employeeDTO.getSalary());
+
+            Employee updatedEmployee = employeeRepository.save(existingEmployee);
+
+            return mapToDTO(updatedEmployee);
         }
 
         return null;
