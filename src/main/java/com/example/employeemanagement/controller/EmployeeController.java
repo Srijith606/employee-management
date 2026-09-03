@@ -25,9 +25,10 @@ public class EmployeeController {
     public Employee getEmployeeById(@PathVariable Long id) {
         return employeeService.getEmployeeById(id);
     }
-    @PutMapping
-    public Employee updateEmployee(@RequestBody Employee employee) {
-        return employeeService.saveEmployee(employee);
+    @PutMapping("/{id}")
+    public Employee updateEmployee(@PathVariable Long id,
+                                   @RequestBody Employee employee) {
+        return employeeService.updateEmployee(id, employee);
     }
     @DeleteMapping("/{id}")
     public void deleteEmployee(@PathVariable Long id) {
