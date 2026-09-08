@@ -1,6 +1,8 @@
 package com.example.employeemanagement.service;
 
 import com.example.employeemanagement.dto.EmployeeDTO;
+import org.springframework.data.domain.Page;
+
 import java.util.List;
 
 public interface EmployeeService {
@@ -14,4 +16,8 @@ public interface EmployeeService {
     EmployeeDTO updateEmployee(Long id, EmployeeDTO employeeDTO);
 
     void deleteEmployee(Long id);
+
+    Page<EmployeeDTO> getEmployees(int page, int size);
+
+    List<EmployeeDTO> getEmployeesSorted(String field);
 }

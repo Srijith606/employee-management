@@ -3,6 +3,9 @@ package com.example.employeemanagement.service;
 import com.example.employeemanagement.dto.EmployeeDTO;
 import com.example.employeemanagement.entity.Employee;
 import com.example.employeemanagement.repository.EmployeeRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -91,5 +94,24 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void deleteEmployee(Long id) {
         employeeRepository.deleteById(id);
+    }
+
+    @Override
+    public Page<EmployeeDTO> getEmployees(int page, int size) {
+
+        Page<Employee> employeePage =
+                employeeRepository.findAll(PageRequest.of(page, size));
+
+        return employeePage.map(this::mapToDTO);
+    }
+
+    @Override
+    public List<EmployeeDTO> getEmployeesSorted(String field) {
+
+        return employeeRepository
+                .findAll(Sort.by(Sort.Direction.ASC, field))
+                .stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
 }

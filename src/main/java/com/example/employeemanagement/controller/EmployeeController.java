@@ -1,7 +1,9 @@
 package com.example.employeemanagement.controller;
-import jakarta.validation.Valid;
+
 import com.example.employeemanagement.dto.EmployeeDTO;
 import com.example.employeemanagement.service.EmployeeService;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,5 +42,20 @@ public class EmployeeController {
     @DeleteMapping("/{id}")
     public void deleteEmployee(@PathVariable Long id) {
         employeeService.deleteEmployee(id);
+    }
+
+    @GetMapping("/pagination")
+    public Page<EmployeeDTO> getEmployees(
+            @RequestParam int page,
+            @RequestParam int size) {
+
+        return employeeService.getEmployees(page, size);
+    }
+
+    @GetMapping("/sort")
+    public List<EmployeeDTO> sortEmployees(
+            @RequestParam String field) {
+
+        return employeeService.getEmployeesSorted(field);
     }
 }
